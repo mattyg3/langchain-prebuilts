@@ -3,7 +3,7 @@ langgraph
 langchain-ollama
 langchain_openai
 langchain_core
-
+keyring
 # torch 
 # torchvision 
 # torchaudio
