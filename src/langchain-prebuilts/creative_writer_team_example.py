@@ -1,7 +1,7 @@
 import langsmith_link #Needed to track traces with langsmith
 # from workflows.creative_writing_room.agents import * #Import Agents
 import workflows.creative_writing_room.compile_workflow 
-from workflows.creative_writing_room.compile_workflow import app, AgentState, run_selected_agents
+from workflows.creative_writing_room.compile_workflow import app, AgentState, run_selected_agents, create_agent_state
 from util_funcs import format_feedback
 
 # print()
@@ -10,15 +10,7 @@ from util_funcs import format_feedback
 if __name__ == "__main__":
     prompt = "Develop a story about an Atlantis type civilization. An early plot point should be a catastrophic event, resulting in our characters needing to learn how to survive without their advanced technology."
 
-    state: AgentState = {
-        "messages": [{"role": "user", "content": prompt}],
-        "context": {"story_idea": prompt},
-        "world_outputs": [],
-        "character_outputs": [],
-        "plot_outputs": [],
-        "editor_feedback": [],
-        "head_writer_outputs": [],
-    }
+    state = create_agent_state(messages=[{"role": "user", "content": prompt}], context={"story_idea": prompt})
 
     # Initial full pipeline run
     state = app.invoke(state)
