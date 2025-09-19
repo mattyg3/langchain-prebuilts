@@ -1,6 +1,4 @@
-from langchain_ollama import ChatOllama
-
-llm = ChatOllama(model="gemma3:4b", temperature=0.7, validate_model_on_init=True)
+from llm_init import llm_high_temp as llm
 
 def world_builder_agent(story_idea: str):
 

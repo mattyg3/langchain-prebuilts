@@ -1,5 +1,4 @@
-import langsmith_link #Needed to track traces with langsmith
-# from workflows.creative_writing_room.agents import * #Import Agents
+import llm_init # Needed to track traces with langsmith
 import workflows.creative_writing_room.compile_workflow 
 from workflows.creative_writing_room.compile_workflow import app, AgentState, run_selected_agents, create_agent_state
 from util_funcs import format_feedback
@@ -8,7 +7,9 @@ from util_funcs import format_feedback
 # print(agents)
 # ---- Interactive Session ----
 if __name__ == "__main__":
-    prompt = "Develop a story about an Atlantis type civilization. An early plot point should be a catastrophic event, resulting in our characters needing to learn how to survive without their advanced technology."
+    # prompt = "Develop a story about an Atlantis type civilization. An early plot point should be a catastrophic event, resulting in our characters needing to learn how to survive without their advanced technology."
+    # prompt = "Create a simple short story about a fisherman in the Midwest US."
+    prompt = "Develop a Hero's Journey type story about an outcast male teenager. Story should take place in a high-fantasy world."
 
     state = create_agent_state(messages=[{"role": "user", "content": prompt}], context={"story_idea": prompt})
 
