@@ -10,12 +10,34 @@ os.environ["LANGSMITH_PROJECT"] = "creative_writing_team"
 os.environ["LANGSMITH_TRACING"] = "true"
 
 # Define Local LLM
-model_name = "gemma3:4b" # "gpt-oss:20b"
+model_name = "gemma3:4b"
 
-llm = ChatOllama(model=model_name, temperature=0.5, validate_model_on_init=True) 
+## Set Temps
+base_temp = 1.0
+high_temp = 1.3
+low_temp = 0.05
+
+## Set Other Params
+top_k = 64
+top_p = 0.95
+
+### Base
+llm = ChatOllama(model=model_name
+                 , temperature=base_temp
+                 , top_k = top_k
+                 , top_p = top_p
+                 , validate_model_on_init=True) 
 
 ### High Temp
-llm_high_temp = ChatOllama(model=model_name, temperature=1.3, validate_model_on_init=True)
+llm_high_temp = ChatOllama(model=model_name
+                           , temperature=high_temp
+                           , top_k = top_k
+                           , top_p = top_p
+                           , validate_model_on_init=True)
 
 ### Low Temp
-llm_low_temp = ChatOllama(model=model_name, temperature=0.05, validate_model_on_init=True)
+llm_low_temp = ChatOllama(model=model_name
+                          , temperature=low_temp
+                          , top_k = top_k
+                          , top_p = top_p
+                          , validate_model_on_init=True)
