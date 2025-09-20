@@ -66,7 +66,10 @@ def create_agent_state(
 
 
 # ---- LangGraph Workflow ----
+workflow = StateGraph(state_schema=AgentState) #, context_schema=Context
 # -------------------------
+
+### --- Nodes ---
 def human_node(state: AgentState):
     answer = input(f"\nApprove of story outline? (yes/no) \n").lower()
     if 'yes' in answer or 'y' in answer:
@@ -76,6 +79,7 @@ def human_node(state: AgentState):
     else:
         state['routing'] = "yes" 
     return state 
+workflow.add_node("Human Node", RunnableLambda(human_node))
 
 def follow_up_node(state: AgentState):
     answer = input(f"\nWhich component(s) need reworking? ['world', 'plot', 'characters', 'all'] \n").lower()
@@ -93,8 +97,7 @@ def follow_up_node(state: AgentState):
     state['context'] = state['context'] + [f'\nUser was not satisfied with the provided story, make improvements to your story component. User provided guidelines: {details}\n']
 
     return state
-
-    
+workflow.add_node("Follow Up", RunnableLambda(follow_up_node))
 
 def greeter_node(state: AgentState):
     greeting = f"\nHey!, \nI'm an expert story crafter that has a team of specialized agents at my disposal. \nGive me some details about the story you want.\n\n\nInput:\n"
@@ -106,6 +109,8 @@ def greeter_node(state: AgentState):
     state["messages"].append({"role": "greeter", "content": response})
     state["routing_list"] = ['world', 'plot', 'characters'] #init run should go through all nodes
     return state
+workflow.add_node("Greeting Node", greeter_node)
+
 def world_builder_node(state: AgentState):
     print('\n\nGenerating..') #currently go through all agent nodes
     if 'world' in state["routing_list"]:
@@ -114,6 +119,8 @@ def world_builder_node(state: AgentState):
         state["world_outputs"].append(response)
         state["messages"].append({"role": "world_builder", "content": response})
     return state
+workflow.add_node("World Builder", world_builder_node)
+
 def character_dev_node(state: AgentState):
     if 'characters' in state["routing_list"]:
         print('     Developing Characters..')
@@ -121,6 +128,8 @@ def character_dev_node(state: AgentState):
         state["character_outputs"].append(response)
         state["messages"].append({"role": "character_developer", "content": response})
     return state
+workflow.add_node("Character Developer", character_dev_node)
+
 def plot_architect_node(state: AgentState):
     if 'plot' in state["routing_list"]:
         print('     Creating Plot & Story Arcs..')
@@ -128,12 +137,16 @@ def plot_architect_node(state: AgentState):
         state["plot_outputs"].append(response)
         state["messages"].append({"role": "plot_architect", "content": response})
     return state
+workflow.add_node("Plot Architect", plot_architect_node)
+
 # def editor_critic_node(state: AgentState):
 #     print('Critiquing..')
 #     response = editor_critic_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1]) # only last output
 #     state["editor_feedback"].append(response)
 #     state["messages"].append({"role": "editor_critic", "content": response})
 #     return state
+# workflow.add_node("Editor/Critic", editor_critic_node)
+
 def head_writer_node(state: AgentState):
     print('     Summarizing..')
     response = head_writer_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1]) # only last output , state["editor_feedback"][-1]
@@ -143,22 +156,11 @@ def head_writer_node(state: AgentState):
     for msg in state["messages"][-1]["content"]:
         print(format_feedback(msg))
     return state
+workflow.add_node("Head Writer", head_writer_node)
 
 def save_node(state: AgentState):
     save_graph_state(state, file_name='save_state')
     return state
-
-workflow = StateGraph(state_schema=AgentState) #, context_schema=Context
-
-### --- Nodes ---
-workflow.add_node("Human Node", RunnableLambda(human_node))
-workflow.add_node("Follow Up", RunnableLambda(follow_up_node))
-workflow.add_node("Greeting Node", greeter_node)
-workflow.add_node("World Builder", world_builder_node)
-workflow.add_node("Character Developer", character_dev_node)
-workflow.add_node("Plot Architect", plot_architect_node)
-# workflow.add_node("Editor/Critic", editor_critic_node)
-workflow.add_node("Head Writer", head_writer_node)
 workflow.add_node("Save Node", RunnableLambda(save_node))
 
 ### --- Edges ---
