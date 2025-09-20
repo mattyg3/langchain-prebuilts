@@ -15,6 +15,8 @@ def editor_critic_agent(story_idea: str, world_output: str, character_output: st
     Characters: {character_output}
     Plot: {plot_output}
 
+
+
     # Output
     An organized review of the main story components. Give suggestions for improvement if necessary. **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
     """
