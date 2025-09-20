@@ -38,3 +38,23 @@ def format_feedback(raw_text: str) -> str:
             formatted_lines.append(wrapped)
 
     return "\n".join(formatted_lines)
+
+
+def save_graph_viz(graph, save_path='src/langchain-prebuilts/workflows/'):
+    #Set PATH for graphviz
+    import os
+    os.environ["PATH"] += os.pathsep + r"C:\Program Files\Graphviz\bin"
+
+    from graphviz import Digraph
+    # --- Export to Graphviz ---
+    dot = Digraph(comment="LangGraph Workflow")
+
+    # Add nodes and edges
+    for node in graph.get_graph().nodes:
+        dot.node(node, node)
+
+    for edge in graph.get_graph().edges:
+        dot.edge(edge[0], edge[1])
+
+    # Save to a PNG inside the workspace 'src\langchain-prebuilts\workflows\creative_writing_room'
+    dot.render(save_path, format="png", cleanup=True)

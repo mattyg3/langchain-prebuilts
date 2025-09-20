@@ -1,6 +1,7 @@
-langchain
-langgraph
-langchain-ollama
-langchain_openai
-langchain_core
-keyring
+langchain==0.3.27
+langgraph==0.6.7
+langchain-ollama==0.3.8
+langchain_openai==0.3.33
+langchain_core==0.3.76
+keyring==25.6.0
+graphviz=0.21
