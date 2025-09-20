@@ -4,43 +4,45 @@ from workflows.creative_writing_room.compile_workflow import app, AgentState, ru
 from util_funcs import format_feedback
 
 # print()
-# print(agents)
+# print(agents)A 
 # ---- Interactive Session ----
 if __name__ == "__main__":
     # prompt = "Develop a story about an Atlantis type civilization. An early plot point should be a catastrophic event, resulting in our characters needing to learn how to survive without their advanced technology."
     # prompt = "Create a simple short story about a fisherman in the Midwest US."
     # prompt = "Develop a Hero's Journey type story about an outcast male teenager. Story should take place in a high-fantasy world."
-    prompt = "Develop a story about a fictional small town in the south US, during a zombie apocalypse"
+    # prompt = "Develop a story about a fictional small town in the south US, during a zombie apocalypse"
 
-    state = create_agent_state(messages=[{"role": "user", "content": prompt}], context={"story_idea": prompt})
+    # state = create_agent_state(messages=[{"role": "user", "content": prompt}], context={"story_idea": prompt})
+
+    state = create_agent_state()
 
     # Initial full pipeline run
     state = app.invoke(state)
-    print("\nFINAL CREATIVE PACKAGE:\n")
-    for chunk in state["head_writer_outputs"][-1]:
-        print(format_feedback(chunk))
+    # print("\nFINAL CREATIVE PACKAGE:\n")
+    # for chunk in state["messages"]:
+    #     print(format_feedback(chunk))
 
-    while True:
-        follow = input("\n[Follow-up] Enter more questions/ideas (or 'exit'): ").strip()
-        if follow.lower() in {"exit", "quit", "done", "finished"}:
-            print("Session ended.")
-            break
+    # while True:
+    #     follow = input("\n[Follow-up] Enter more questions/ideas (or 'exit'): ").strip()
+    #     if follow.lower() in {"exit", "quit", "done", "finished"}:
+    #         print("Session ended.")
+    #         break
 
-        state["messages"].append({"role": "user", "content": follow})
-        state["context"]["story_idea"] = follow  # optional: treat as new seed
+    #     state["messages"].append({"role": "user", "content": follow})
+    #     state["context"]["story_idea"] = follow  # optional: treat as new seed
 
-        choice = input(
-            "Which agents to rerun? "
-            "[a]ll, [w]orld, [c]haracter, [p]lot, [e]ditor (e.g. wc): "
-        ).strip().lower()
+    #     choice = input(
+    #         "Which agents to rerun? "
+    #         "[a]ll, [w]orld, [c]haracter, [p]lot, [e]ditor (e.g. wc): "
+    #     ).strip().lower()
 
-        if choice in {"a", ""}:
-            # Empty or 'a' => full run
-            state = app.invoke(state)
-        else:
-            # Dependency-aware partial run
-            state = run_selected_agents(state, list(choice))
+    #     if choice in {"a", ""}:
+    #         # Empty or 'a' => full run
+    #         state = app.invoke(state)
+    #     else:
+    #         # Dependency-aware partial run
+    #         state = run_selected_agents(state, list(choice))
 
-        print("\nUPDATED CREATIVE PACKAGE:\n")
-        for chunk in state["head_writer_outputs"][-1]:
-            print(format_feedback(chunk))
+    #     print("\nUPDATED CREATIVE PACKAGE:\n")
+    #     for chunk in state["head_writer_outputs"][-1]:
+    #         print(format_feedback(chunk))
