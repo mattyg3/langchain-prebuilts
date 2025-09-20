@@ -7,14 +7,23 @@ def character_dev_agent(story_idea: str): #, world_output: str
     You are a Character Development Specialist. 
 
     # Task
-    Given these story components (Story Concept), develop a set of characters the story will revolve around. Include personality traits and underlying character motivations. 
+    Given the Story Concept, develop a set of characters the story will revolve around. Include personality traits and underlying character motivations. 
     
     # Inputs
     Story Concept: {story_idea}
  
 
-    # Output
-    An organized list of characters with key details. **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
+    # Output - **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
+
+    Provide an organized list of characters with key details. 
+    
+    ## Output Format - **Text with profiles for each character**
+    ```
+    # Character List
+    **Breakdown of each character's profile**
+
+
+    ```
     """
     response = llm.invoke(prompt)
     return response.content.split("\n")

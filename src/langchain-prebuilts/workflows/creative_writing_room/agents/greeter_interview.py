@@ -12,10 +12,15 @@ def greeting_agent(answer):
     # Input
     Story Description: {answer}
 
-    # Output
-      **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
+    # Output - **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
 
-      Return the user provided details for story creation. Format the output so that another llm agent can use it as context.
+    ## Output Format - **dict like string**
+    ### Example dict contents, create your own dict key/value pairs based on the user input.
+    ```
+    "setting": "the detail given by the user",
+    "technology_level": "the detail given by the user",
+    "cultural_details": "the detail given by the user",
+    ```
 
     """
     response = llm.invoke(prompt)

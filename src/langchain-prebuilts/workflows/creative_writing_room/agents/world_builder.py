@@ -7,13 +7,27 @@ def world_builder_agent(story_idea: str):
     You are a World Builder.  
 
     # Task
-    Given the story concept, create a detailed setting including time period, locations, and cultural details.
+    Given the Story Concept, create a detailed setting including lore, religion, time period, location(s), and additional cultural details.
     
     # Inputs
     Story Concept: {story_idea}
 
-    # Output
-    A detailed and organized description of the created world. **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
+    # Output - **DO NOT INCLUDE ANY CONVERSATIONAL TEXT IN RESPONSE**
+
+    A detailed and organized description of the created world. 
+
+    ## Output Format - **Detailed Overview of created World**
+        ### Short Example Detailed Overview, write your own sections based on the created World.
+    ```
+    # World Name
+    ## Setting
+    **Desciption of the World's setting**
+    ## Technology
+    **Description of technology level and specific tech available**
+    ## Lore
+    **Description of World's lore**
+
+    ```
     """
     response = llm.invoke(prompt)
     return response.content.split("\n")

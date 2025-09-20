@@ -46,38 +46,36 @@ def create_agent_state(context=None, messages=[], world_outputs=[], character_ou
 # ---- LangGraph Workflow ----
 # -------------------------
 def human_node(state: AgentState):
-    answer = input(f"Approve of story outline? (yes/no) ").lower()
+    answer = input(f"\nApprove of story outline? (yes/no) \n").lower()
     if 'yes' in answer or 'y' in answer:
         state['routing'] = "yes"
-        return state 
     elif 'no' in answer or 'n' in answer:
         state['routing'] = "no"
-        return state 
     else:
         state['routing'] = "yes" 
-        return state 
+    return state 
 
 def follow_up_node(state: AgentState):
-    answer = input(f"Which component(s) need reworking? ['world', 'plot', 'characters', 'all'] ").lower()
+    answer = input(f"\nWhich component(s) need reworking? ['world', 'plot', 'characters', 'all'] \n").lower()
     state['routing_list'] = []
-    state['context'] = state['context'] + ['\nUser was not satisfied with the provided story, make improvements to your story component.\n']
-    # if 'all' in answer:
-    #     state['routing'] = 'all'
-    # else:
-    # state['routing'] = 'subset'
+    
     if 'world' in answer:
         state['routing_list'].append('world')
     if 'plot' in answer:
         state['routing_list'].append('plot')
     if 'characters' in answer:
         state['routing_list'].append('characters')
+    
+    details = input(f"\nProvide any additional details or guidelines for changes you want to see.\n").lower()
+
+    state['context'] = state['context'] + [f'\nUser was not satisfied with the provided story, make improvements to your story component. User provided guidelines: {details}\n']
 
     return state
 
     
 
 def greeter_node(state: AgentState):
-    greeting = f"\nHey!, \nI'm an expert story crafter that has a team of specialized agents at my disposal. \nGive me some details about the story you want.\n\n\n\n\n\nInput:\n"
+    greeting = f"\nHey!, \nI'm an expert story crafter that has a team of specialized agents at my disposal. \nGive me some details about the story you want.\n\n\nInput:\n"
     answer = input(greeting).lower()
     response = greeting_agent(answer)
     state["context"] = response
@@ -87,22 +85,23 @@ def greeter_node(state: AgentState):
     state["routing_list"] = ['world', 'plot', 'characters'] #init run should go through all nodes
     return state
 def world_builder_node(state: AgentState):
+    print('\n\nGenerating..') #currently go through all agent nodes
     if 'world' in state["routing_list"]:
-        print('Building the World..')
+        print('     Building the World..')
         response = world_builder_agent(state["context"])
         state["world_outputs"].append(response)
         state["messages"].append({"role": "world_builder", "content": response})
     return state
 def character_dev_node(state: AgentState):
     if 'characters' in state["routing_list"]:
-        print('Developing Characters..')
+        print('     Developing Characters..')
         response = character_dev_agent(state["context"]) # only last output from world_builder , state["world_outputs"][-1]
         state["character_outputs"].append(response)
         state["messages"].append({"role": "character_developer", "content": response})
     return state
 def plot_architect_node(state: AgentState):
     if 'plot' in state["routing_list"]:
-        print('Creating Plot & Story Arcs..')
+        print('     Creating Plot & Story Arcs..')
         response = plot_architect_agent(state["context"]) # only last output , state["world_outputs"][-1], state["character_outputs"][-1]
         state["plot_outputs"].append(response)
         state["messages"].append({"role": "plot_architect", "content": response})
@@ -114,13 +113,13 @@ def plot_architect_node(state: AgentState):
 #     state["messages"].append({"role": "editor_critic", "content": response})
 #     return state
 def head_writer_node(state: AgentState):
-    print('Summarizing..')
+    print('     Summarizing..')
     response = head_writer_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1]) # only last output , state["editor_feedback"][-1]
     state["head_writer_outputs"].append(response)
     state["messages"].append({"role": "head_writer", "content": response})
     # state["need_human_bool"] = False
     #Display
-    print(state)
+    print(f'STATE TYPE: {type(state)}')
     for msg in state["messages"][-1]["content"]:
         print(format_feedback(msg))
     return state
