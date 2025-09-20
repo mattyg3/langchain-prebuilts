@@ -7,7 +7,7 @@ from .agents.character_developer import character_dev_agent
 from .agents.plot_architect import plot_architect_agent
 # from .agents.editor_critic import editor_critic_agent
 from .agents.head_writer import head_writer_agent
-from util_funcs import format_feedback, save_graph_state
+from util_funcs import format_feedback, save_graph_state, save_graph_viz
 from langchain_core.runnables import RunnableLambda
 
 # ---- Define State and Context ---- 
@@ -139,34 +139,31 @@ def head_writer_node(state: AgentState):
     response = head_writer_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1]) # only last output , state["editor_feedback"][-1]
     state["head_writer_outputs"].append(response)
     state["messages"].append({"role": "head_writer", "content": response})
-    save_graph_state(state, file_name='save_state')
     print("\n\n------------ Head Writer ------------\n")
     for msg in state["messages"][-1]["content"]:
         print(format_feedback(msg))
     return state
 
-# def save_node(state: AgentState):
-#     save_graph_state(state, file_name='save_state', parent_path='creative_writing_room/outputs')
-#     return state
+def save_node(state: AgentState):
+    save_graph_state(state, file_name='save_state')
+    return state
 
 workflow = StateGraph(state_schema=AgentState) #, context_schema=Context
 
+### --- Nodes ---
 workflow.add_node("Human Node", RunnableLambda(human_node))
 workflow.add_node("Follow Up", RunnableLambda(follow_up_node))
-
 workflow.add_node("Greeting Node", greeter_node)
 workflow.add_node("World Builder", world_builder_node)
 workflow.add_node("Character Developer", character_dev_node)
 workflow.add_node("Plot Architect", plot_architect_node)
 # workflow.add_node("Editor/Critic", editor_critic_node)
 workflow.add_node("Head Writer", head_writer_node)
+workflow.add_node("Save Node", RunnableLambda(save_node))
 
+### --- Edges ---
 workflow.set_entry_point("Greeting Node")
-# workflow.add_edge("Greeting Node", "Human Node")
-# # workflow.set_entry_point("Human Node")
-# workflow.add_edge("Human Node", "World Builder")
 workflow.add_edge("Greeting Node", "World Builder")
- 
 workflow.add_edge("World Builder", "Character Developer")
 workflow.add_edge("Character Developer", "Plot Architect")
 workflow.add_edge("Plot Architect", "Head Writer")
@@ -176,14 +173,10 @@ workflow.add_edge("Head Writer", "Human Node")
 workflow.add_conditional_edges(
     "Human Node", # source node
     lambda s: s.get("routing", "yes"),
-    {"yes": END, "no": "Follow Up"}
+    {"yes": "Save Node", "no": "Follow Up"}
 )
+workflow.add_edge("Save Node", END)
 workflow.add_edge("Follow Up", "World Builder")
-# workflow.add_conditional_edges(
-#     "Follow Up", # source node
-#     lambda s: s.get("routing", "all"),
-#     {"world": "World Builder", "all": ""}
-# )
 
 app = workflow.compile()
 
