@@ -33,7 +33,6 @@ def create_agent_state(context=None, messages=[], world_outputs=[], character_ou
 # ---- LangGraph Workflow ----
 # -------------------------
 def world_builder_node(state: AgentState):
-    
     response = world_builder_agent(state["context"])
     state["world_outputs"].append(response)
     state["messages"].append({"role": "world_builder", "content": response})
