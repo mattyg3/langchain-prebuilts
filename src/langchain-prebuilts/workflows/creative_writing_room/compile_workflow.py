@@ -7,39 +7,61 @@ from .agents.character_developer import character_dev_agent
 from .agents.plot_architect import plot_architect_agent
 # from .agents.editor_critic import editor_critic_agent
 from .agents.head_writer import head_writer_agent
-from util_funcs import format_feedback
+from util_funcs import format_feedback, save_graph_state
 from langchain_core.runnables import RunnableLambda
 
 # ---- Define State and Context ---- 
 # -------------------------
 class AgentState(TypedDict):
+    #core outputs#
     context:  str | None #dict[str, Any]
     messages: list[dict[str, Any]]
+    #agent outputs#
     world_outputs: list[dict[str, Any]]
     character_outputs: list[dict[str, Any]]
     plot_outputs: list[dict[str, Any]]
-    # editor_feedback: list[dict[str, Any]]
     head_writer_outputs: list[dict[str, Any]]
-    # need_human_bool: bool
-    human_answer: list[dict[str, Any]]
-    # follow_up: list[dict[str, Any]]
+    #graph helpers#
     routing: str
     routing_list: list[str]
+    # editor_feedback: list[dict[str, Any]]
+    # need_human_bool: bool
+    # human_answer: list[dict[str, Any]]
+    # follow_up: list[dict[str, Any]]
+    
+    
 
-def create_agent_state(context=None, messages=[], world_outputs=[], character_outputs=[], plot_outputs=[], head_writer_outputs=[], human_answer=[],  routing=None, routing_list=[]) -> AgentState: #, need_human_bool=False, editor_feedback=[], follow_up=[]
+def create_agent_state(
+        #core outputs#
+        context=None, 
+        messages=[], 
+        #agent outputs#
+        world_outputs=[], 
+        character_outputs=[], 
+        plot_outputs=[], 
+        head_writer_outputs=[], 
+        #graph helpers#
+        routing=None, 
+        routing_list=[]) -> AgentState:
     return AgentState(
+        #core outputs#
         context=context,
         messages=messages,
+        #agent outputs#
         world_outputs=world_outputs,
         character_outputs=character_outputs,
         plot_outputs=plot_outputs,
-        # editor_feedback=editor_feedback,
         head_writer_outputs=head_writer_outputs,
-        # need_human_bool=need_human_bool,
-        human_answer=human_answer,
-        # follow_up=follow_up,
+        #graph helpers#
         routing=routing,
-        routing_list=routing_list
+        routing_list=routing_list,
+
+
+        # editor_feedback=editor_feedback,
+        # need_human_bool=need_human_bool,
+        # human_answer=human_answer,
+        # follow_up=follow_up,
+        
     )
 
 
@@ -117,15 +139,14 @@ def head_writer_node(state: AgentState):
     response = head_writer_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1]) # only last output , state["editor_feedback"][-1]
     state["head_writer_outputs"].append(response)
     state["messages"].append({"role": "head_writer", "content": response})
-    # state["need_human_bool"] = False
-    #Display
-    print(f'STATE TYPE: {type(state)}')
+    save_graph_state(state, file_name='save_state')
+    print("\n\n------------ Head Writer ------------\n")
     for msg in state["messages"][-1]["content"]:
         print(format_feedback(msg))
     return state
 
 # def save_node(state: AgentState):
-#     print(state)
+#     save_graph_state(state, file_name='save_state', parent_path='creative_writing_room/outputs')
 #     return state
 
 workflow = StateGraph(state_schema=AgentState) #, context_schema=Context

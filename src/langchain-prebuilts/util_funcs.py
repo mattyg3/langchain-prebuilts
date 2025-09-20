@@ -1,3 +1,4 @@
+##PRINT FUNCTIONS##
 def format_feedback(raw_text: str) -> str:
     """
     Format a long feedback string into a clean, easy-to-read block
@@ -40,10 +41,18 @@ def format_feedback(raw_text: str) -> str:
     return "\n".join(formatted_lines)
 
 
-def save_graph_viz(graph, save_path='src/langchain-prebuilts/workflows/'):
+##SAVE FUNCTIONS##
+import json
+from pathlib import Path
+from datetime import datetime
+def save_graph_viz(graph, file_name='saved_langgraph_viz', parent_path='src/langchain-prebuilts/outputs'):
     #Set PATH for graphviz
     import os
     os.environ["PATH"] += os.pathsep + r"C:\Program Files\Graphviz\bin"
+
+    #Save Path
+    save_path = Path(f'{parent_path}/{file_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
+    save_path.parent.mkdir(parents=True, exist_ok=True)
 
     from graphviz import Digraph
     # --- Export to Graphviz ---
@@ -58,3 +67,12 @@ def save_graph_viz(graph, save_path='src/langchain-prebuilts/workflows/'):
 
     # Save to a PNG inside the workspace 'src\langchain-prebuilts\workflows\creative_writing_room'
     dot.render(save_path, format="png", cleanup=True)
+
+
+def save_graph_state(state, file_name='saved_state', parent_path='src/langchain-prebuilts/outputs'):
+    #Save Path
+    save_path = Path(f'{parent_path}/{file_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(save_path, "w") as f:
+        json.dump(state, f, indent=4)
