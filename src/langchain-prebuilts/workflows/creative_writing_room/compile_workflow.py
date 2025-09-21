@@ -7,7 +7,7 @@ from .agents.character_developer import character_dev_agent
 from .agents.plot_architect import plot_architect_agent
 # from .agents.editor_critic import editor_critic_agent
 from .agents.head_writer import head_writer_agent
-from util_funcs import format_feedback, save_graph_state, get_persona
+from util_funcs import format_feedback, save_graph_state, get_persona #, get_plot
 from langchain_core.runnables import RunnableLambda
 
 # ---- Define State ---- 
@@ -100,12 +100,13 @@ workflow.add_node("Follow Up", RunnableLambda(follow_up_node))
 def greeter_node(state: AgentState):
     greeting = f"\nHey!, \nI'm an expert story crafter that has a team of specialized agents at my disposal. \nGive me some details about the story you want.\n\n\nInput:\n"
     answer = input(greeting).lower()
-    response = greeting_agent(answer)
-    state["context"] = response
+    # response = greeting_agent(answer)
+     #+ str(response)
     state["messages"].append({"role": "greeter", "content": greeting})
     state["messages"].append({"role": "user", "content": answer})
-    state["messages"].append({"role": "greeter", "content": response})
+    # state["messages"].append({"role": "greeter", "content": response})
     state["routing_list"] = ['world', 'plot', 'characters'] #init run should go through all nodes
+    state["context"] = state["context"] + f'\nUser Input: {answer}'
     return state
 workflow.add_node("Greeting Node", greeter_node)
 

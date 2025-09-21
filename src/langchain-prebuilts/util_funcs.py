@@ -107,3 +107,31 @@ def get_persona(persona, file_path = 'src/langchain-prebuilts/util_data/personal
         else:
             pass
     return None
+
+##ARCHETPYES##
+def view_plot_archetypes(file_path = 'src/langchain-prebuilts/util_data/plot_archetypes.json'):
+    ####Load JSON
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    #### Access the list of plot_archetypes
+    plots = data["plot_archetypes"]
+
+    #### Example: print all agent names
+    for plot in plots:
+        print(plot["name"], "-", plot["description"], "\n")
+
+def get_plot(plot, file_path = 'src/langchain-prebuilts/util_data/plot_archetypes.json'):
+    ####Load JSON
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    #### Access the list of plot_archetypes
+    plots = data.get("plot_archetypes")
+    for doc in plots:
+        agent = doc.get("name")
+        if agent.lower() == plot.lower():
+            return doc
+        else:
+            pass
+    return None
