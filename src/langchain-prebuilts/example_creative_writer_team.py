@@ -10,7 +10,7 @@ if __name__ == "__main__":
     plot_doc = get_plot("Antihero Journey")
 
     # Initialize an empty state
-    state = create_agent_state(context=str(plot_doc))
+    state = create_agent_state(context=f'Plot Archetype: {str(plot_doc)}\n')
 
     # Save graph diagram to folder
     save_graph_viz(app) #file_name='saved_langgraph_viz'

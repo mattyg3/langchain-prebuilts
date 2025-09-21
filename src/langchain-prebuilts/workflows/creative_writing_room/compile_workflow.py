@@ -106,7 +106,7 @@ def greeter_node(state: AgentState):
     state["messages"].append({"role": "user", "content": answer})
     # state["messages"].append({"role": "greeter", "content": response})
     state["routing_list"] = ['world', 'plot', 'characters'] #init run should go through all nodes
-    state["context"] = state["context"] + f'\nUser Input: {answer}'
+    state["context"] = state["context"] + f'\nDetails Provided by User: {answer}'
     return state
 workflow.add_node("Greeting Node", greeter_node)
 
