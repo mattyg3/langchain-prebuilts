@@ -14,6 +14,8 @@ def print_state_message(state):
     for msg in state["messages"][-1]["content"]:
             print(format_feedback(msg))
 
+# def y_n_process_input(state_elem):
+
 # ---- Define State ---- 
 # -------------------------
 class AgentState(TypedDict):
@@ -44,7 +46,7 @@ def create_agent_state(
         plot_outputs=[], 
         head_writer_outputs=[], 
         #graph helpers#
-        routing=None, 
+        routing="yes", 
         routing_list=[],
         optional_human_nodes=False) -> AgentState:
     return AgentState(
@@ -85,7 +87,7 @@ def greeter_node(state: AgentState):
     state["messages"].append({"role": "user", "content": answer})
     # state["messages"].append({"role": "greeter", "content": response})
     state["routing_list"] = ['world', 'plot', 'characters'] #init run should go through all nodes
-    state["context"] = state["context"] + f'\nDetails Provided by User: {answer}'
+    state["context"] = state["context"] + f'\nUser: {answer}\n'
     return state
 workflow.add_node("Greeting Node", greeter_node)
 
@@ -163,8 +165,6 @@ def world_builder_human_node(state: AgentState):
             # state["context"] = f"Original direction: {state['messages'][1]} Updated user direction: {new_context}" Original Context: {state['context']}
         else:
             state['routing'] = "yes" 
-        
-
     return state 
 workflow.add_node("Optional World Builder Human Node", RunnableLambda(world_builder_human_node))
 
@@ -271,11 +271,6 @@ workflow.add_conditional_edges(
     {"yes": "Head Writer", "no": "Plot Architect"}
 )
 
-# workflow.add_edge("World Builder", "Character Developer")
-# workflow.add_edge("Character Developer", "Plot Architect")
-# workflow.add_edge("Plot Architect", "Head Writer")
-# workflow.add_edge("Plot Architect", "Editor/Critic")
-# workflow.add_edge("Editor/Critic", "Head Writer")
 workflow.add_edge("Head Writer", "Human Node")
 workflow.add_conditional_edges(
     "Human Node", # source node
