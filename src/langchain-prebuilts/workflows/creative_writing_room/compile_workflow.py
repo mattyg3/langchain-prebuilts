@@ -7,10 +7,10 @@ from .agents.character_developer import character_dev_agent
 from .agents.plot_architect import plot_architect_agent
 # from .agents.editor_critic import editor_critic_agent
 from .agents.head_writer import head_writer_agent
-from util_funcs import format_feedback, save_graph_state, save_graph_viz
+from util_funcs import format_feedback, save_graph_state, get_persona
 from langchain_core.runnables import RunnableLambda
 
-# ---- Define State and Context ---- 
+# ---- Define State ---- 
 # -------------------------
 class AgentState(TypedDict):
     #core outputs#
@@ -29,8 +29,6 @@ class AgentState(TypedDict):
     # human_answer: list[dict[str, Any]]
     # follow_up: list[dict[str, Any]]
     
-    
-
 def create_agent_state(
         #core outputs#
         context=None, 
@@ -115,7 +113,7 @@ def world_builder_node(state: AgentState):
     print('\n\nGenerating..') #currently go through all agent nodes
     if 'world' in state["routing_list"]:
         print('     Building the World..')
-        response = world_builder_agent(state["context"])
+        response = world_builder_agent(state["context"], persona=get_persona(persona='Worldbuilder'))
         state["world_outputs"].append(response)
         state["messages"].append({"role": "world_builder", "content": response})
     return state
@@ -124,7 +122,7 @@ workflow.add_node("World Builder", world_builder_node)
 def character_dev_node(state: AgentState):
     if 'characters' in state["routing_list"]:
         print('     Developing Characters..')
-        response = character_dev_agent(state["context"]) # only last output from world_builder , state["world_outputs"][-1]
+        response = character_dev_agent(state["context"], persona=get_persona(persona='Archetype')) # only last output from world_builder , state["world_outputs"][-1]
         state["character_outputs"].append(response)
         state["messages"].append({"role": "character_developer", "content": response})
     return state
@@ -133,7 +131,7 @@ workflow.add_node("Character Developer", character_dev_node)
 def plot_architect_node(state: AgentState):
     if 'plot' in state["routing_list"]:
         print('     Creating Plot & Story Arcs..')
-        response = plot_architect_agent(state["context"]) # only last output , state["world_outputs"][-1], state["character_outputs"][-1]
+        response = plot_architect_agent(state["context"], persona=get_persona(persona='Pacer')) # only last output , state["world_outputs"][-1], state["character_outputs"][-1]
         state["plot_outputs"].append(response)
         state["messages"].append({"role": "plot_architect", "content": response})
     return state
@@ -149,7 +147,7 @@ workflow.add_node("Plot Architect", plot_architect_node)
 
 def head_writer_node(state: AgentState):
     print('     Summarizing..')
-    response = head_writer_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1]) # only last output , state["editor_feedback"][-1]
+    response = head_writer_agent(state["context"], state["world_outputs"][-1], state["character_outputs"][-1], state["plot_outputs"][-1], persona=get_persona(persona='Narrator')) # only last output , state["editor_feedback"][-1] 
     state["head_writer_outputs"].append(response)
     state["messages"].append({"role": "head_writer", "content": response})
     print("\n\n------------ Head Writer ------------\n")

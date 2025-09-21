@@ -1,10 +1,13 @@
 from llm_init import llm
 
-def editor_critic_agent(story_idea: str, world_output: str, character_output: str, plot_output: str):
+def editor_critic_agent(story_idea: str, world_output: str, character_output: str, plot_output: str, persona=None):
 
     prompt = f"""
     # Role
     You are an Editor/Critic. 
+
+    # Personality (Optional Input)
+    Your personality: {persona}
 
     # Task
     Provide critical feedback for each of the main story components (World Design, Characters, and Plot)

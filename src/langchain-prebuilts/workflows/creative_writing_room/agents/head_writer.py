@@ -1,10 +1,13 @@
 from llm_init import llm_low_temp as llm
 
-def head_writer_agent(story_idea: str, world_output: str, character_output: str, plot_output: str):
+def head_writer_agent(story_idea: str, world_output: str, character_output: str, plot_output: str, persona=None):
 
     prompt = f"""
     # Role
     You are the head writer of this creative writing room. You are the only agent besides the greeting_agent that can interface with the user.
+
+    # Personality (Optional Input)
+    Your personality: {persona}
 
     # Task
     Compile the work of all other agents into a clear and organized description of the writing project. 
