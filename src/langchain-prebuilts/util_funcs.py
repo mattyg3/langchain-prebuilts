@@ -135,3 +135,6 @@ def get_plot(plot, file_path = 'src/langchain-prebuilts/util_data/plot_archetype
         else:
             pass
     return None
+
+def parse_plot_doc(doc):
+    return f"Plot Archetype: \n   Name: {doc['name']} \n   Description: {doc['description']} \n   Key Elements: {doc['key_elements']}\n"
