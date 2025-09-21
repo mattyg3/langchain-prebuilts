@@ -1,12 +1,15 @@
 from llm_init import llm
 
-def plot_architect_agent(story_idea: str, plot_arch=[]): # , world_output: str, character_output: str
+def plot_architect_agent(story_idea: str, persona=None, plot_arch=[]): # , world_output: str, character_output: str
 
     ## add plot_arch logic here...
 
     prompt = f"""
     # Role
     You are a Plot Architect. 
+
+    # Personality (Optional Input)
+    Your personality: {persona}
 
     # Task
     Given the Story Concept, develop an interesting plot for a novel. Include the total story arc and key conflicts. 

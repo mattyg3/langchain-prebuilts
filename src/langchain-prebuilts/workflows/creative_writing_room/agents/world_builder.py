@@ -1,10 +1,13 @@
 from llm_init import llm_high_temp as llm
 
-def world_builder_agent(story_idea: str):
+def world_builder_agent(story_idea: str, persona=None):
 
     prompt = f"""
     # Role
-    You are a World Builder.  
+    You are a World Builder. 
+    
+    # Personality (Optional Input)
+    Your personality: {persona}
 
     # Task
     Given the Story Concept, create a detailed setting including lore, religion, time period, location(s), and additional cultural details.
