@@ -42,6 +42,17 @@ def format_feedback(raw_text: str) -> str:
     return "\n".join(formatted_lines)
 
 
+
+def get_role_msgs(messages, role):
+    return [msg["content"] for msg in messages if msg.get("role") == role]
+
+def get_last_role_msg(messages, role):
+    for msg in reversed(messages):  # iterate backwards for efficiency
+        if msg.get("role") == role:
+            return msg.get("content")
+    return None
+# print(''.join(get_last_role_msg(final_state["messages"], role="user")))
+
 ##SAVE FUNCTIONS##
 import json
 from pathlib import Path
@@ -84,8 +95,17 @@ def save_agent_outputs(state, file_name='saved_summary_doc', parent_path='src/la
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Combine Agents outputs
-    content = f"OUTPUT\n\n{state['head_writer_outputs'][-1]}\n\n{state['world_outputs'][-1]}\n\n{state['character_outputs'][-1]}\n\n{state['plot_outputs'][-1]}\n\n"
-    # content = f"OUTPUT\n\n{state['head_writer_outputs']}\n\n{state['world_outputs']}\n\n{state['character_outputs']}\n\n{state['plot_outputs']}\n\n"
+    # content = f"OUTPUT\n\n{state['head_writer_outputs'][-1]}\n\n{state['world_outputs'][-1]}\n\n{state['character_outputs'][-1]}\n\n{state['plot_outputs'][-1]}\n\n"
+    # role
+    # last_user_message = next(
+    # (m for m in reversed(state["messages"]) if m.get("role") == "world_builder"),
+    # None  # returns None if no user message found
+    # )
+    head_writer_outputs = format_feedback('\n'.join(get_last_role_msg(state["messages"], role="head_writer")))
+    world_builder_output = format_feedback('\n'.join(get_last_role_msg(state["messages"], role="world_builder")))
+    character_outputs = format_feedback('\n'.join(get_last_role_msg(state["messages"], role="character_developer")))
+    plot_outputs = format_feedback('\n'.join(get_last_role_msg(state["messages"], role="plot_architect")))
+    content = f"OUTPUT\n\n{head_writer_outputs}\n\n{world_builder_output}\n\n{plot_outputs}\n\n{character_outputs}\n\n"
 
     with open(save_path, "w", encoding="utf-8") as f: #"a" for append
         f.write(content)
@@ -106,6 +126,7 @@ def create_unique_folder(base_name: str, parent: str = ".") -> Path:
 
     folder.mkdir(parents=True)
     return folder
+
 
 def save_run(state, graph, run_name='unnamed_run', save_path='src/langchain-prebuilts/outputs'):
     # #Set PATH for graphviz
