@@ -76,7 +76,7 @@ def save_graph_state(state, file_name='saved_state', parent_path='src/langchain-
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(save_path, "w") as f:
-        json.dump(state, f, indent=4)
+        json.dump(state, f, indent=4) #.model_dump()
 
 def save_agent_outputs(state, file_name='saved_summary_doc', parent_path='src/langchain-prebuilts/outputs'):
     # Save Path
@@ -84,8 +84,8 @@ def save_agent_outputs(state, file_name='saved_summary_doc', parent_path='src/la
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Combine Agents outputs
-    # content = f"OUTPUT\n\n{state['head_writer_outputs'][-1]}\n\n{state['world_outputs'][-1]}\n\n{state['character_outputs'][-1]}\n\n{state['plot_outputs'][-1]}\n\n"
-    content = f"OUTPUT\n\n{state['head_writer_outputs']}\n\n{state['world_outputs']}\n\n{state['character_outputs']}\n\n{state['plot_outputs']}\n\n"
+    content = f"OUTPUT\n\n{state['head_writer_outputs'][-1]}\n\n{state['world_outputs'][-1]}\n\n{state['character_outputs'][-1]}\n\n{state['plot_outputs'][-1]}\n\n"
+    # content = f"OUTPUT\n\n{state['head_writer_outputs']}\n\n{state['world_outputs']}\n\n{state['character_outputs']}\n\n{state['plot_outputs']}\n\n"
 
     with open(save_path, "w", encoding="utf-8") as f: #"a" for append
         f.write(content)
@@ -122,12 +122,12 @@ def save_run(state, graph, run_name='unnamed_run', save_path='src/langchain-preb
     save_graph_state(state, parent_path=run_folder)
 
     # Save Graph Visual
-    save_graph_state(graph, parent_path=run_folder)
+    save_graph_viz(graph, parent_path=run_folder)
 
-    # # Save Agent Output Doc
-    # save_agent_outputs(state, parent_path=run_folder)
+    # Save Agent Output Doc
+    save_agent_outputs(state, parent_path=run_folder)
 
-    print(f"\n\n    ..Saved to: {run_folder}")
+    print(f"\n\n    ..Saved to: {run_folder}\n")
 
     
 

@@ -17,6 +17,8 @@ if __name__ == "__main__":
 
     # Initial full pipeline run
     state = app.invoke(state) #saves state to file_name='saved_state_'+timestamp
+    # print('\n\n')
+    # print(type(state))
 
     # Save graph diagram to folder
     save_run(state, app, run_name='dev_run1', save_path='src/langchain-prebuilts/outputs')
